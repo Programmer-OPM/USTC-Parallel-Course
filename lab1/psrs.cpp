@@ -10,23 +10,23 @@ using namespace std;
 const int NUM_THREADS = 4;
 
 int** temp;
-int** segment;//¸÷´¦ÀíÆ÷°´ÕÕÖ÷ÔªµÄ¸÷×ÔµÄÓĞĞò¶ÎºÅ
+int** segment;//å„å¤„ç†å™¨æŒ‰ç…§ä¸»å…ƒçš„å„è‡ªçš„æœ‰åºæ®µå·
 int* sizes;
 int* sample;
 int* pivot_number;
 
 void show(){
 
-	// ÊäÈëÊı×é´óĞ¡
+	// è¾“å…¥æ•°ç»„å¤§å°
 	int num;
 	cout << "Please input the num:\n";
 	cin >> num;
 
-	// ´¦Àí²»Õû³ıÇé¿ö
+	// å¤„ç†ä¸æ•´é™¤æƒ…å†µ
 	int beginpoint = 0;
 	beginpoint = NUM_THREADS - num % NUM_THREADS;
 
-	//Ëæ»úÉú³ÉÊı¾İ
+	//éšæœºç”Ÿæˆæ•°æ®
 	srand(time(0));
 	int* data = new int[num + beginpoint];
 	for (int i = 0; i < num; i++){
@@ -36,26 +36,26 @@ void show(){
 		data[i] = 0;
 	}
 
-	// Êä³öËæ»úÊı×é½á¹û
-	cout << "Ëæ»úÊı×é£º\n";
+	// è¾“å‡ºéšæœºæ•°ç»„ç»“æœ
+	cout << "éšæœºæ•°ç»„ï¼š\n";
 	for (int i = 0; i < num; i++){
 		cout << data[i] << " ";
 	}
 	cout << endl;
 	num += beginpoint;
 
-	// ½øĞĞÅÅĞò
+	// è¿›è¡Œæ’åº
 	PSRS(data, num, NUM_THREADS);
 
-	// ¼ì²éÅÅĞò
-	cout << "PSRS½á¹û£º\n";
+	// æ£€æŸ¥æ’åº
+	cout << "PSRSç»“æœï¼š\n";
 	for (int i = beginpoint; i < num; i++){
 		cout << data[i] << " ";
 	}
 	cout << endl;
-	cout << "ÅÅĞòÊı×é´óĞ¡:" << num - beginpoint << ",Ïß³ÌÊı:" << NUM_THREADS << endl;
+	cout << "æ’åºæ•°ç»„å¤§å°:" << num - beginpoint << ",çº¿ç¨‹æ•°:" << NUM_THREADS << endl;
 
-	// ÊÍ·Å¶¯Ì¬Êı¾İ
+	// é‡Šæ”¾åŠ¨æ€æ•°æ®
 	free(data);
 	for (int i = 0; i < NUM_THREADS; i++){
 		free(temp[i]);
@@ -68,7 +68,7 @@ void PSRS(int* data, int size, int NUM_THREADS){
 	sample = (int*)malloc(sizeof(int) * (NUM_THREADS * NUM_THREADS));
 	pivot_number = (int*)malloc(sizeof(int) * (NUM_THREADS - 1));
 
-	// ¾ùÔÈ»®·Ö + ¾Ö²¿ÅÅĞò + ÕıÔò²ÉÑù
+	// å‡åŒ€åˆ’åˆ† + å±€éƒ¨æ’åº + æ­£åˆ™é‡‡æ ·
 #pragma omp parallel num_threads(NUM_THREADS)
 	{
 		int id = omp_get_thread_num();
@@ -80,10 +80,10 @@ void PSRS(int* data, int size, int NUM_THREADS){
 			sample[id * NUM_THREADS + i] = *(data + (id * localN + i * step));
 		}
 	}
-	//Ñù±¾ÅÅĞò
+	//æ ·æœ¬æ’åº
 	sort(sample, sample + NUM_THREADS * NUM_THREADS);
 
-	//Ñ¡ÔñÖ÷Ôª
+	//é€‰æ‹©ä¸»å…ƒ
 	for (int i = 1; i < NUM_THREADS; i++){
 		pivot_number[i - 1] = sample[i * NUM_THREADS];
 	}
@@ -92,7 +92,7 @@ void PSRS(int* data, int size, int NUM_THREADS){
 		segment[i] = (int*)malloc(sizeof(int) * (NUM_THREADS + 1));
 	}
 
-	//Ö÷Ôª»®·Ö
+	//ä¸»å…ƒåˆ’åˆ†
 #pragma omp parallel num_threads(NUM_THREADS)
 	{
 		int id = omp_get_thread_num();
@@ -116,14 +116,14 @@ void PSRS(int* data, int size, int NUM_THREADS){
 		}
 	}
 	
-	// ÊÍ·Å¶¯Ì¬Êı¾İ
+	// é‡Šæ”¾åŠ¨æ€æ•°æ®
 	free(sample);
 	free(pivot_number);
 	sizes = (int*)malloc(sizeof(int) * NUM_THREADS);
 	temp = (int**)malloc(sizeof(int*) * NUM_THREADS);
 	
-	//È«¾Ö½»»»
-	// ¼ÆËãÃ¿Ò»¶ÎµÄ´óĞ¡£¬¶¯Ì¬³õÊ¼»¯
+	//å…¨å±€äº¤æ¢
+	// è®¡ç®—æ¯ä¸€æ®µçš„å¤§å°ï¼ŒåŠ¨æ€åˆå§‹åŒ–
 	for (int i = 0; i < NUM_THREADS; i++){
 		sizes[i] = 0;
 		for (int j = 0; j < NUM_THREADS; j++){
@@ -141,7 +141,7 @@ void PSRS(int* data, int size, int NUM_THREADS){
 		}
 	}
 
-	//¹é²¢ÅÅĞò
+	//å½’å¹¶æ’åº
 #pragma omp parallel num_threads(NUM_THREADS)
 	{
 		int id = omp_get_thread_num();
