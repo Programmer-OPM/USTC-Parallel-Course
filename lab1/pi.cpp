@@ -1,11 +1,11 @@
 #include<stdio.h>
 #include<omp.h>
 #include "openmp.h"
-static long long num_steps = 100000;//Ô½´óÖµÔ½¾«È·
+static long long num_steps = 100000;//è¶Šå¤§å€¼è¶Šç²¾ç¡®
 double step;
 #define NUM_THREADS 2
 
-//´®ĞĞËã·¨
+//ä¸²è¡Œç®—æ³•
 void pi() {
     int i;
     double x, pi, sum = 0.0;
@@ -18,13 +18,13 @@ void pi() {
     printf("%lf\n", pi);
 }
 
-//Ê¹ÓÃ²¢ĞĞÓò²¢ĞĞ»¯
+//ä½¿ç”¨å¹¶è¡ŒåŸŸå¹¶è¡ŒåŒ–
 void pi_1() {
     int i, id;
     double x, pi, sum[NUM_THREADS];
     step = 1.0 / (double)num_steps;
-    omp_set_num_threads(NUM_THREADS);//ÉèÖÃ2Ïß³Ì
-#pragma omp parallel private(i,id,x)//²¢ĞĞÓò¿ªÊ¼£¬Ã¿¸öÏß³Ì£¨0ºÍ1£©¶¼»áÖ´ĞĞ¸Ã´úÂë
+    omp_set_num_threads(NUM_THREADS);//è®¾ç½®2çº¿ç¨‹
+#pragma omp parallel private(i,id,x)//å¹¶è¡ŒåŸŸå¼€å§‹ï¼Œæ¯ä¸ªçº¿ç¨‹ï¼ˆ0å’Œ1ï¼‰éƒ½ä¼šæ‰§è¡Œè¯¥ä»£ç 
     {
         id = omp_get_thread_num();
         for (i = id, sum[id] = 0.0; i < num_steps; i = i + NUM_THREADS) {
@@ -37,21 +37,21 @@ void pi_1() {
     }
     printf("%lf\n", pi);
 }
-//¹²2¸öÏß³Ì²Î¼Ó¼ÆËã£¬ÆäÖĞÏß³Ì0½øĞĞµü´ú²½0£¬2£¬4£¬...Ïß³Ì1½øĞĞµü´ú²½1£¬3£¬5£¬...
+//å…±2ä¸ªçº¿ç¨‹å‚åŠ è®¡ç®—ï¼Œå…¶ä¸­çº¿ç¨‹0è¿›è¡Œè¿­ä»£æ­¥0ï¼Œ2ï¼Œ4ï¼Œ...çº¿ç¨‹1è¿›è¡Œè¿­ä»£æ­¥1ï¼Œ3ï¼Œ5ï¼Œ...
 
-//Ê¹ÓÃ¹²ÏíÈÎÎñ½á¹¹²¢ĞĞ»¯
+//ä½¿ç”¨å…±äº«ä»»åŠ¡ç»“æ„å¹¶è¡ŒåŒ–
 void pi_2() {
     int i;
     double pi, sum[NUM_THREADS];
     step = 1.0 / (double)num_steps;
-    omp_set_num_threads(NUM_THREADS);//ÉèÖÃ2Ïß³Ì
-#pragma omp parallel//²¢ĞĞÓò¿ªÊ¼£¬Ã¿¸öÏß³Ì£¨0ºÍ1£©¶¼»áÖ´ĞĞ¸Ã´úÂë
+    omp_set_num_threads(NUM_THREADS);//è®¾ç½®2çº¿ç¨‹
+#pragma omp parallel//å¹¶è¡ŒåŸŸå¼€å§‹ï¼Œæ¯ä¸ªçº¿ç¨‹ï¼ˆ0å’Œ1ï¼‰éƒ½ä¼šæ‰§è¡Œè¯¥ä»£ç 
     {
         double x;
         int id;
         id = omp_get_thread_num();
         sum[id] = 0;
-#pragma omp for//Î´Ö¸¶¨chunk£¬µü´úÆ½¾ù·ÖÅä¸ø¸÷Ïß³Ì£¨0ºÍ1£©£¬Á¬Ğø»®·Ö
+#pragma omp for//æœªæŒ‡å®šchunkï¼Œè¿­ä»£å¹³å‡åˆ†é…ç»™å„çº¿ç¨‹ï¼ˆ0å’Œ1ï¼‰ï¼Œè¿ç»­åˆ’åˆ†
         for (i = 0; i < num_steps; i++) {
             x = (i + 0.5) * step;
             sum[id] += 4.0 / (1.0 + x * x);
@@ -62,35 +62,35 @@ void pi_2() {
     }
     printf("%lf\n", pi);
 }
-//¹²2¸öÏß³Ì²Î¼Ó¼ÆËã£¬ÆäÖĞÏß³Ì0½øĞĞµü´ú²½0~49999£¬Ïß³Ì1½øĞĞµü´ú²½50000~99999
+//å…±2ä¸ªçº¿ç¨‹å‚åŠ è®¡ç®—ï¼Œå…¶ä¸­çº¿ç¨‹0è¿›è¡Œè¿­ä»£æ­¥0~49999ï¼Œçº¿ç¨‹1è¿›è¡Œè¿­ä»£æ­¥50000~99999
 
-//Ê¹ÓÃprivate×Ó¾äºÍcritical²¿·Ö²¢ĞĞ»¯
+//ä½¿ç”¨privateå­å¥å’Œcriticaléƒ¨åˆ†å¹¶è¡ŒåŒ–
 void pi_3() {
     int i;
     double pi = 0.0, sum = 0.0, x = 0.0;
     step = 1.0 / (double)num_steps;
-    omp_set_num_threads(NUM_THREADS);//ÉèÖÃ2Ïß³Ì
-#pragma omp parallel private(i, x, sum)//¸Ã×Ó¾ä±íÊ¾i£¬x£¬sum±äÁ¿¶ÔÓÚÃ¿¸öÏß³ÌÊÇË½ÓĞµÄ
+    omp_set_num_threads(NUM_THREADS);//è®¾ç½®2çº¿ç¨‹
+#pragma omp parallel private(i, x, sum)//è¯¥å­å¥è¡¨ç¤ºiï¼Œxï¼Œsumå˜é‡å¯¹äºæ¯ä¸ªçº¿ç¨‹æ˜¯ç§æœ‰çš„
     {
         int id = omp_get_thread_num();
         for (i = id, sum = 0.0; i < num_steps; i += NUM_THREADS) {
             x = (i + 0.5) * step;
             sum += 4.0 / (1.0 + x * x);
         }
-#pragma omp critical//Ö¸¶¨´úÂë¶ÎÔÚÍ¬Ò»Ê±¿ÌÖ»ÄÜÓÉÒ»¸öÏß³Ì½øĞĞÖ´ĞĞ
+#pragma omp critical//æŒ‡å®šä»£ç æ®µåœ¨åŒä¸€æ—¶åˆ»åªèƒ½ç”±ä¸€ä¸ªçº¿ç¨‹è¿›è¡Œæ‰§è¡Œ
         pi += sum * step;
     }
     printf("%lf\n", pi);
 }
-//¹²2¸öÏß³Ì²Î¼Ó¼ÆËã£¬ÆäÖĞÏß³Ì0½øĞĞµü´ú²½0£¬2£¬4£¬...Ïß³Ì1½øĞĞµü´ú²½1£¬3£¬5£¬...µ±±»Ö¸¶¨ÎªcriticalµÄ´úÂë¶ÎÕıÔÚ±»0Ïß³ÌÖ´ĞĞÊ±£¬1Ïß³ÌµÄÖ´ĞĞÒ²µ½´ï¸Ã´úÂë¶Î£¬ÔòËü½«±»×èÈûÖªµÀ0Ïß³ÌÍË³öÁÙ½çÇø
+//å…±2ä¸ªçº¿ç¨‹å‚åŠ è®¡ç®—ï¼Œå…¶ä¸­çº¿ç¨‹0è¿›è¡Œè¿­ä»£æ­¥0ï¼Œ2ï¼Œ4ï¼Œ...çº¿ç¨‹1è¿›è¡Œè¿­ä»£æ­¥1ï¼Œ3ï¼Œ5ï¼Œ...å½“è¢«æŒ‡å®šä¸ºcriticalçš„ä»£ç æ®µæ­£åœ¨è¢«0çº¿ç¨‹æ‰§è¡Œæ—¶ï¼Œ1çº¿ç¨‹çš„æ‰§è¡Œä¹Ÿåˆ°è¾¾è¯¥ä»£ç æ®µï¼Œåˆ™å®ƒå°†è¢«é˜»å¡çŸ¥é“0çº¿ç¨‹é€€å‡ºä¸´ç•ŒåŒº
 
-//Ê¹ÓÃ²¢ĞĞ¹æÔ¼
+//ä½¿ç”¨å¹¶è¡Œè§„çº¦
 void pi_4() {
     int i;
     double pi = 0.0, sum = 0.0, x = 0.0;
     step = 1.0 / (double)num_steps;
-    omp_set_num_threads(NUM_THREADS);//ÉèÖÃ2Ïß³Ì
-#pragma omp parallel for reduction(+:sum) private(x)//Ã¿¸öÏß³Ì±£ÁôÒ»·İË½ÓĞ¿½±´sum£¬xÎªÏß³ÌË½ÓĞ£¬×îºó¶ÔÏß³ÌÖĞËùÓĞsum½øĞĞ+¹æÔ¼£¬²¢¸üĞÂsumµÄÈ«¾ÖÖµ
+    omp_set_num_threads(NUM_THREADS);//è®¾ç½®2çº¿ç¨‹
+#pragma omp parallel for reduction(+:sum) private(x)//æ¯ä¸ªçº¿ç¨‹ä¿ç•™ä¸€ä»½ç§æœ‰æ‹·è´sumï¼Œxä¸ºçº¿ç¨‹ç§æœ‰ï¼Œæœ€åå¯¹çº¿ç¨‹ä¸­æ‰€æœ‰sumè¿›è¡Œ+è§„çº¦ï¼Œå¹¶æ›´æ–°sumçš„å…¨å±€å€¼
     for (i = 1; i <= num_steps; i++) {
         x = (i - 0.5) * step;
         sum += 4.0 / (1.0 + x * x);
@@ -98,4 +98,4 @@ void pi_4() {
     pi = sum * step;
     printf("%lf\n", pi);
 }
-//¹²2¸öÏß³Ì²Î¼Ó¼ÆËã£¬ÆäÖĞÏß³Ì0½øĞĞµü´ú²½0~49999£¬Ïß³Ì1½øĞĞµü´ú²½50000~99999
+//å…±2ä¸ªçº¿ç¨‹å‚åŠ è®¡ç®—ï¼Œå…¶ä¸­çº¿ç¨‹0è¿›è¡Œè¿­ä»£æ­¥0~49999ï¼Œçº¿ç¨‹1è¿›è¡Œè¿­ä»£æ­¥50000~99999
